@@ -29,6 +29,7 @@ class SpedProcessor(ab, ar):
 
         # Criar um DataFrame
         self.df = pd.DataFrame(data)
+        st.dataframe(self.df)
 
         # Aplicando transformações
         self.calculando_contadores_de_linhas()
@@ -52,23 +53,45 @@ class SpedProcessor(ab, ar):
         return self.df
 
     def devolvendo_txt(self):
-        formatted_lines = self.df.apply(lambda row: '|' + '|'.join(row.dropna().astype(str)), axis=1)
+    # Função para formatar cada linha
+        def formatar_linha(row):
+            # Seleciona apenas as colunas preenchidas (não vazias)
+            valores = row.dropna().tolist()
+
+            # Verifica se o registro é um dos que devem ser truncados após a coluna 4
+            if row[0] in ['M400', 'M410', 'M800', 'M810']:
+                # Mantém apenas as colunas 0 a 4
+                if len(valores) > 4:
+                    valores = valores[:5]
+                return '|' + '|'.join(map(str, valores)) + '|'
+            else:
+                # Para outros registros, mantém todas as colunas
+                return '|' + '|'.join(map(str, valores)) 
+
+        # Aplica a formatação a cada linha do DataFrame
+        formatted_lines = self.df.apply(formatar_linha, axis=1)
         result = '\n'.join(formatted_lines)
 
-        # if result.endswith('|'):
-        #     result = result[:-77]  # Removendo excesso de "|"
+        # Remover linhas após o registro |9999| na coluna 0
+        result_lines = result.splitlines()
+        filtered_lines = []
+        for line in result_lines:
+            filtered_lines.append(line)
+            # Verifica se a linha começa com |9999| (coluna 0)
+            if line.startswith('|9999|'):
+                break
 
+        result = '\n'.join(filtered_lines)
         return result
 
-
-#Configuração do Streamlit
+# Configuração do Streamlit
 st.set_page_config(page_title="Alterar Blocos do arquivo .txt", layout="wide")
 st.title("Alterações automáticas do arquivo .txt")
 
-#Upload de múltiplos arquivos
+# Upload de múltiplos arquivos
 uploaded_files = st.file_uploader("Carregue os arquivos .txt", type=["txt"], accept_multiple_files=True)
 
-#Processamento dos arquivos
+# Processamento dos arquivos
 if uploaded_files:
     processed_files = {}
 
@@ -80,10 +103,10 @@ if uploaded_files:
         df = processor.LendoELimpandoDadosSped()
         processed_txt = processor.devolvendo_txt()
 
-        #Armazena o conteúdo do arquivo processado em um dicionário
+        # Armazena o conteúdo do arquivo processado em um dicionário
         processed_files[file_name] = processed_txt
 
-    #Criar o arquivo .zip com os arquivos processados
+    # Criar o arquivo .zip com os arquivos processados
     zip_buffer = BytesIO()
 
     with zipfile.ZipFile(zip_buffer, "w") as zip_file:
@@ -92,7 +115,7 @@ if uploaded_files:
 
     zip_buffer.seek(0)
 
-    #Botão de download do arquivo ZIP
+    # Botão de download do arquivo ZIP
     st.download_button(
         label="Baixar Arquivos Processados (.zip)",
         data=zip_buffer,
