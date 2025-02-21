@@ -8,8 +8,10 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
 
         self.df.loc[self.df[0] == '0100', 1] = 'WILLIAM SILVA DE ALMEIDA'
         self.df.loc[self.df[0] == '0100', 2] = '89709861115'
-        self.df.loc[self.df[0] == '0100', 3] = '19342DF'
+        self.df.loc[self.df[0] == '0100', 3] = '019342'
+        self.df.loc[self.df[0] == '0100', 4] = '18619561000139'
         self.df.loc[self.df[0] == '0100', 6] = 'Q CRS 502 BLOCO B'
+        self.df.loc[self.df[0] == '0100', 7] = 'LOJA 59'
         self.df.loc[self.df[0] == '0100', 5] = '70330520'
         self.df.loc[self.df[0] == '0100', 9] = 'ASA SUL'
         self.df.loc[self.df[0] == '0100', 10] = '6181272930'

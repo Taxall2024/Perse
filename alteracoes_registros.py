@@ -14,10 +14,23 @@ class AlteracoesRegistros():
         self.df.loc[self.df[0] == 'F525', 7] = '06'
         self.df.loc[self.df[0] == 'F525', 8] = '06'
     
+    def alterar_F550(self):
+        self.df.loc[self.df[0] == 'F550', 2] = '06'
+        self.df.loc[self.df[0] == 'F550', 3] = '0'
+        self.df.loc[self.df[0] == 'F550', 5] = '0'
+        self.df.loc[self.df[0] == 'F550', 6] = '0'
+        self.df.loc[self.df[0] == 'F550', 7] = '06'
+        self.df.loc[self.df[0] == 'F550', 8] = '0'
+        self.df.loc[self.df[0] == 'F550', 10] = '0'
+        self.df.loc[self.df[0] == 'F550', 11] = '0'
+    
     def zerar_M200(self):
         self.df.loc[self.df[0] == 'M200', 1:12] = '0'
 
     def zerar_M600(self):
+        self.df.loc[self.df[0] == 'M600', 1:12] = '0'
+    
+    def zerar_M605(self):
         self.df.loc[self.df[0] == 'M600', 1:12] = '0'
 
     def alterar_M400(self):
@@ -34,9 +47,15 @@ class AlteracoesRegistros():
     
     def excluir_M210(self):
         self.df = self.df[self.df[0] != 'M210']
+
+    def excluir_M205(self):
+        self.df = self.df[self.df[0] != 'M205']
     
     def excluir_M610(self):
         self.df = self.df[self.df[0] != 'M610']
+    
+    def excluir_M605(self):
+        self.df = self.df[self.df[0] != 'M605']
 
     # Arquivo não consolidados
 
