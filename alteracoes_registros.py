@@ -77,6 +77,7 @@ class AlteracoesRegistros():
         colunas = [15, 17, 18, 19]
         self.df.loc[self.df[0] == 'C100', colunas] = '00'
     
+
     def adicionar_registros_M(self):
         """
         Adiciona os registros M400, M410, M800 e M810 dentro do bloco de registros M
@@ -102,25 +103,52 @@ class AlteracoesRegistros():
         indices_m = self.df.index[self.df[0].str.startswith('M')]
         
         if not indices_m.empty:
-            idx_m_fim = indices_m.max()  # Última posição do bloco M
+            # Criar uma lista de registros M existentes para determinar a posição correta
+            registros_m_existentes = self.df.loc[indices_m, 0].tolist()
+            
+            # Ordenar os registros M existentes com base no valor numérico após o "M"
+            registros_m_existentes.sort(key=lambda x: int(x[1:]))
+            
+            # Inserir os novos registros na ordem correta
+            for registro in registros:
+                if not (self.df[0] == registro[0]).any():
+                    # Criar uma nova linha preenchendo as colunas restantes com ''
+                    nova_linha = registro + [''] * (num_colunas - len(registro))
+                    
+                    # Encontrar a posição correta para inserir o novo registro
+                    posicao_insercao = None
+                    for i, reg_existente in enumerate(registros_m_existentes):
+                        if int(registro[0][1:]) < int(reg_existente[1:]):
+                            # Encontrar o índice correspondente no DataFrame
+                            posicao_insercao = self.df.index[self.df[0] == reg_existente].tolist()[0]
+                            break
+                    
+                    # Se não encontrou uma posição, insere no final do bloco M
+                    if posicao_insercao is None:
+                        posicao_insercao = indices_m[-1] + 1
+                    
+                    # Garantir que a posição de inserção não ultrapasse o tamanho do DataFrame
+                    posicao_insercao = min(posicao_insercao, len(self.df))
+                    
+                    # Adicionar a nova linha na posição correta
+                    self.df = pd.concat([
+                        self.df.iloc[:posicao_insercao],  # Parte antes da posição correta
+                        pd.DataFrame([nova_linha], columns=self.df.columns),  # Nova linha
+                        self.df.iloc[posicao_insercao:]  # Parte após a inserção
+                    ], ignore_index=True)
+                    
+                    # Atualizar a lista de registros M existentes
+                    registros_m_existentes.append(registro[0])
+                    registros_m_existentes.sort(key=lambda x: int(x[1:]))
         else:
-            idx_m_fim = 0  # Se não houver registros M, adicionar no começo
-
-        for registro in registros:
-            if not (self.df[0] == registro[0]).any():
-                # Criar uma nova linha preenchendo as colunas restantes com ''
+            # Se não houver registros M, adicionar todos os novos registros no começo
+            for registro in registros:
                 nova_linha = registro + [''] * (num_colunas - len(registro))
-                
-                # Adicionar a nova linha dentro do bloco M, respeitando a sequência
                 self.df = pd.concat([
-                    self.df.iloc[:idx_m_fim + 1],  # Parte antes da posição correta
-                    pd.DataFrame([nova_linha], columns=self.df.columns),  # Nova linha
-                    self.df.iloc[idx_m_fim + 1:]  # Parte após a inserção
+                    pd.DataFrame([nova_linha], columns=self.df.columns),
+                    self.df
                 ], ignore_index=True)
-
-                # Atualizar o índice para garantir a ordem correta na próxima inserção
-                idx_m_fim += 1
-
+            
         # Agora adicionamos a contagem correta em 9900
         #self.atualizar_contador_9900()
 

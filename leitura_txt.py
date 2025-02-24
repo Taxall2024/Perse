@@ -36,7 +36,9 @@ class SpedProcessor(ab, ar):
         self.dados_willian()
         self.alterar_F500()
         self.alterar_F525()
-        self.zerar_M200()  
+        self.alterar_F550()
+        self.zerar_M200()
+        self.adicionar_registros_M()  
         self.zerar_M600()
         #self.alterar_M400()
         #self.alterar_M800()
@@ -50,8 +52,8 @@ class SpedProcessor(ab, ar):
         self.alterar_C170()
         self.alterar_A100()
         self.alterar_C100()
-        self.alterar_F550()
-        self.adicionar_registros_M()
+  
+        st.dataframe(self.df)
 
         return self.df
 
@@ -83,7 +85,8 @@ class SpedProcessor(ab, ar):
             # Verifica se a linha começa com |9999| (coluna 0)
             if line.startswith('|9999|'):
                 break
-
+        
+        filtered_lines.append('')
         result = '\n'.join(filtered_lines)
         return result
 
