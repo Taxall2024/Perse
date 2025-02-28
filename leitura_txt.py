@@ -14,7 +14,7 @@ class SpedProcessor(ab, ar):
         self.file_content = file_content
         self.df = None
 
-    def LendoELimpandoDadosSped(self):
+    def LendoELimpandoDadosSped(self, user_input):
         data = []
         self.file_content.seek(0)  # Voltar ao início do arquivo para garantir a leitura
 
@@ -27,34 +27,35 @@ class SpedProcessor(ab, ar):
                 valores = linha.split('|')[1:]  # Remove o primeiro '|'
                 data.append(valores)
 
+    
         # Criar um DataFrame
         self.df = pd.DataFrame(data)
         st.dataframe(self.df)
 
+        if user_input:
+            self.df.loc[self.df[0] == '0000', 4] = user_input
+
+    
         # Aplicando transformações
-        self.calculando_contadores_de_linhas()
+        
         self.dados_willian()
         self.alterar_F500()
         self.alterar_F525()
         self.alterar_F550()
         self.zerar_M200()
-        self.adicionar_registros_M()  
-        self.zerar_M600()
-        #self.alterar_M400()
-        #self.alterar_M800()
         self.excluir_M210()
         self.excluir_M610()
         self.excluir_M205()
-        self.excluir_M605()
-        #self.alterar_M410()
-        #self.alterar_M810()
+        self.excluir_M605() 
+        self.adicionar_registros_M() 
+        self.zerar_M600()
         self.alterar_A170()
         self.alterar_C170()
         self.alterar_A100()
         self.alterar_C100()
-  
-        st.dataframe(self.df)
+        self.calculando_contadores_de_linhas()
 
+        st.dataframe(self.df)
         return self.df
 
     def devolvendo_txt(self):
@@ -68,10 +69,15 @@ class SpedProcessor(ab, ar):
                 # Mantém apenas as colunas 0 a 4
                 if len(valores) > 4:
                     valores = valores[:5]
-                return '|' + '|'.join(map(str, valores)) + '|'
-            else:
-                # Para outros registros, mantém todas as colunas
-                return '|' + '|'.join(map(str, valores)) 
+            
+            # Junta os valores com '|' e adiciona '|' no início e no final
+            linha_formatada = '|' + '|'.join(map(str, valores))
+
+            # Garante que a linha termine com '|'
+            if not linha_formatada.endswith('|'):
+                linha_formatada += '|'
+            
+            return linha_formatada
 
         # Aplica a formatação a cada linha do DataFrame
         formatted_lines = self.df.apply(formatar_linha, axis=1)
@@ -82,10 +88,10 @@ class SpedProcessor(ab, ar):
         filtered_lines = []
         for line in result_lines:
             filtered_lines.append(line)
-            # Verifica se a linha começa com |9999| (coluna 0)
             if line.startswith('|9999|'):
                 break
         
+        # Adiciona uma linha vazia no final
         filtered_lines.append('')
         result = '\n'.join(filtered_lines)
         return result
@@ -94,8 +100,13 @@ class SpedProcessor(ab, ar):
 st.set_page_config(page_title="Alterar Blocos do arquivo .txt", layout="wide")
 st.title("Alterações automáticas do arquivo .txt")
 
+
 # Upload de múltiplos arquivos
 uploaded_files = st.file_uploader("Carregue os arquivos .txt", type=["txt"], accept_multiple_files=True)
+
+ # Input do usuário
+user_input = st.text_input("Insira o número do Recibo da Escrituração anterior:")
+
 
 # Processamento dos arquivos
 if uploaded_files:
@@ -106,7 +117,7 @@ if uploaded_files:
         new_name = os.path.splitext(original_name)[0] + "_retificado.txt"  # Adiciona _retificado no nome
         file_name = uploaded_file.name
         processor = SpedProcessor(file_name, uploaded_file)
-        df = processor.LendoELimpandoDadosSped()
+        df = processor.LendoELimpandoDadosSped(user_input)
         processed_txt = processor.devolvendo_txt()
 
         # Armazena o conteúdo do arquivo processado em um dicionário

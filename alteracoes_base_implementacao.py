@@ -20,6 +20,8 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
 
     def calculando_contadores_de_linhas(self):
 
+        self.df.reset_index(drop=True, inplace=True)
+
         #Atualizar a contagem de '9900' após possíveis remoções
         contagem_99_00 = self.df[self.df[0] == '9900'].shape[0]
 
@@ -34,12 +36,14 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
         contagem_linhas_99_90 = len(subset_df)
 
         # Calcular total de linhas, **excluindo '9999'**
-        contagem_total_linhas = len(self.df[self.df[0] != '9999'])
+        contagem_total_linhas =  end_index #en(self.df[self.df[0] != '9999'])
+        #linhas_lixo =  self.df.shape[0] - self.df.index[self.df[0].str.startswith('9999')].max() -1 
+        #contagem_total_linhas = contagem_total_linhas - linhas_lixo
 
         # Atualizar a linha '9999' com o total **sem contar ele mesmo**
-        self.df.loc[self.df[0] == '9999', 1] = contagem_total_linhas
+        self.df.loc[self.df[0] == '9999', 1] = contagem_total_linhas + 1
 
-        #Atualizar a linha '9900' com a contagem correta (evitando erro se `9900` não existir)
+        #Atualizar a linha '9900' com a contagem correta (evitando erro se '9900' não existir)
         if contagem_99_00 > 0:
             self.df.loc[(self.df[0] == '9900') & (self.df[1] == '9900'), 2] = contagem_99_00
 
@@ -61,7 +65,7 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
         self.df.loc[self.df[0] == 'F990', 1] = contador_F
 
         #Remover registros '9900' específicos de 'M210' e 'M610'
-        for rubrica in ['M210', 'M610']:
+        for rubrica in ['M210', 'M205', 'M610', 'M605']:
             self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == rubrica))]
 
         #Recalcular a contagem de '9900' depois das remoções
@@ -72,5 +76,5 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
             self.df.loc[(self.df[0] == '9900') & (self.df[1] == '9900'), 2] = contagem_99_00_atualizada
 
         # Remover qualquer linha completamente vazia
-        self.df.dropna(how='all', inplace=True)
+        # self.df.dropna(how='all', inplace=True)
 
