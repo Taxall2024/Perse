@@ -215,10 +215,9 @@ class AlteracoesRegistros():
 
         def alterar_codigo_escrituracao(self):
             # Verifica se a coluna 4 da linha onde a coluna 0 é '0500' tem o valor '411'
-            if self.df.loc[self.df[0] == '0500', 4].item() == '411':
+            if self.df.loc[self.df[0] == '0500', 5].item() == '411':
                 codigo_escrituracao = '411'
             else:
-                # Extrai o valor da coluna 7 da linha onde a coluna 0 é '0500'
                 codigo_escrituracao = self.df.loc[self.df[0] == '0500', 5].item()
             
             return codigo_escrituracao
@@ -226,15 +225,18 @@ class AlteracoesRegistros():
         def alterar_nome_escrituracao(self):
             if self.df.loc[self.df[0] == '0500', 3].item() == 'RECEITA DO PERSE':
                 nome_escrituracao = 'RECEITA DO PERSE'
+                print(nome_escrituracao)
             else:
-                nome_escrituracao = self.df.loc[self.df[0] == '0500', 6].item()
+                nome_escrituracao = self.df.loc[self.df[0] == '0500', 4].item()
+                #nome_escrituracao = 'RECEITA DO PERSE'
+                print(nome_escrituracao)
             
             return nome_escrituracao
         
         codigo_escrituracao = alterar_codigo_escrituracao(self)
-        print(codigo_escrituracao)
+        #print(codigo_escrituracao)
         nome_escrituracao = alterar_nome_escrituracao(self)
-        print(nome_escrituracao)
+        #print(nome_escrituracao)
         # Define os registros a serem adicionados
         registros = [
             ["M400", "06", valor_registrosM, codigo_escrituracao, nome_escrituracao],
