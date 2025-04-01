@@ -140,8 +140,6 @@ class AlteracoesRegistros():
     
 
 
-
-
     def alterar_A100(self):
         mask = self.df[0] == 'A100'
         coluna_4 = self.df.loc[mask, 4]
@@ -176,6 +174,10 @@ class AlteracoesRegistros():
         Adiciona os registros M400, M410, M800 e M810 dentro do bloco de registros M
         respeitando a ordem numérica correta e atualiza o contador 9900.
         """
+        
+        registros_para_remover = ['M400', 'M410', 'M800', 'M810']
+        self.df = self.df[~self.df[0].isin(registros_para_remover)]
+
         self.df.reset_index(drop=True, inplace=True)
 
         def calcular_valor_registrosM(self):
@@ -217,17 +219,18 @@ class AlteracoesRegistros():
             # Verifica se a coluna 4 da linha onde a coluna 0 é '0500' tem o valor '411'
             if self.df.loc[self.df[0] == '0500', 5].item() == '411':
                 codigo_escrituracao = '411'
+                print(codigo_escrituracao)
             else:
                 codigo_escrituracao = self.df.loc[self.df[0] == '0500', 5].item()
-            
+                print(codigo_escrituracao)
             return codigo_escrituracao
 
         def alterar_nome_escrituracao(self):
-            if self.df.loc[self.df[0] == '0500', 3].item() == 'RECEITA DO PERSE':
+            if self.df.loc[self.df[0] == '0500', 6].item() == 'RECEITA DO PERSE':
                 nome_escrituracao = 'RECEITA DO PERSE'
                 print(nome_escrituracao)
             else:
-                nome_escrituracao = self.df.loc[self.df[0] == '0500', 4].item()
+                nome_escrituracao = self.df.loc[self.df[0] == '0500', 6].item()
                 #nome_escrituracao = 'RECEITA DO PERSE'
                 print(nome_escrituracao)
             
