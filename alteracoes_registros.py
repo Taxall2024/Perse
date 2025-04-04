@@ -176,6 +176,9 @@ class AlteracoesRegistros():
         elif (coluna_5 == '00').any():
             self.df.loc[mask & (coluna_5 == '00'), [25, 26]] = '0'
 
+    #def alterar_M225(self):
+
+
 
     def adicionar_registros_M(self):
         """

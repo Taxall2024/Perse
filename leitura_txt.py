@@ -45,6 +45,7 @@ class SpedProcessor(ab, ar):
         self.zerar_M200()
         self.excluir_M210()
         self.excluir_M220()
+        #self.alterar_M225()
         self.excluir_M610()
         self.excluir_M620()
         self.excluir_M205()
