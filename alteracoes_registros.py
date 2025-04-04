@@ -34,6 +34,10 @@ class AlteracoesRegistros():
         self.df = self.df[self.df[0] != 'M210']
         self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == 'M210'))]
 
+    def excluir_M220(self):
+        self.df = self.df[self.df[0] != 'M220']
+        self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == 'M220'))]
+
     def excluir_M205(self):
         self.df = self.df[self.df[0] != 'M205']
         self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == 'M205'))]
@@ -41,6 +45,10 @@ class AlteracoesRegistros():
     def excluir_M610(self):
         self.df = self.df[self.df[0] != 'M610']
         self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == 'M610'))] 
+
+    def excluir_M620(self):
+        self.df = self.df[self.df[0] != 'M620']
+        self.df = self.df[~((self.df[0] == '9900') & (self.df[1] == 'M620'))] 
     
     def excluir_M605(self):
         self.df = self.df[self.df[0] != 'M605']
@@ -216,24 +224,32 @@ class AlteracoesRegistros():
         valor_registrosM = calcular_valor_registrosM(self)
 
         def alterar_codigo_escrituracao(self):
-            # Verifica se a coluna 4 da linha onde a coluna 0 é '0500' tem o valor '411'
-            if self.df.loc[self.df[0] == '0500', 5].item() == '411':
-                codigo_escrituracao = '411'
-                print(codigo_escrituracao)
+            # Verifica se há registros '0500'
+            mask = self.df[0] == '0500'
+            if mask.any():
+                # Pega o primeiro valor encontrado na coluna 5
+                codigo_0500 = self.df.loc[mask, 5].iloc[0]
+                if codigo_0500 == '411':
+                    codigo_escrituracao = '411'
+                else:
+                    codigo_escrituracao = codigo_0500
             else:
-                codigo_escrituracao = self.df.loc[self.df[0] == '0500', 5].item()
-                print(codigo_escrituracao)
+                # Define um valor padrão ou levanta um erro se necessário
+                codigo_escrituracao = '411'  # Ajuste conforme necessário
+            print(codigo_escrituracao)
             return codigo_escrituracao
 
         def alterar_nome_escrituracao(self):
-            if self.df.loc[self.df[0] == '0500', 6].item() == 'RECEITA DO PERSE':
-                nome_escrituracao = 'RECEITA DO PERSE'
-                print(nome_escrituracao)
+            mask = self.df[0] == '0500'
+            if mask.any():
+                nome_0500 = self.df.loc[mask, 6].iloc[0]
+                if nome_0500 == 'RECEITA DO PERSE':
+                    nome_escrituracao = 'RECEITA DO PERSE'
+                else:
+                    nome_escrituracao = nome_0500
             else:
-                nome_escrituracao = self.df.loc[self.df[0] == '0500', 6].item()
-                #nome_escrituracao = 'RECEITA DO PERSE'
-                print(nome_escrituracao)
-            
+                nome_escrituracao = 'RECEITA DO PERSE'  # Ajuste conforme necessário
+            print(nome_escrituracao)
             return nome_escrituracao
         
         codigo_escrituracao = alterar_codigo_escrituracao(self)

@@ -11,10 +11,12 @@ class ImplementandoAlteracoesBase(AlteracoesBase):
         self.df.loc[self.df[0] == '0100', 3] = '019342'
         self.df.loc[self.df[0] == '0100', 4] = '18619561000139'
         self.df.loc[self.df[0] == '0100', 6] = 'Q CRS 502 BLOCO B'
-        self.df.loc[self.df[0] == '0100', 7] = 'LOJA 59'
+        self.df.loc[self.df[0] == '0100', 7] = 'S/N'
         self.df.loc[self.df[0] == '0100', 5] = '70330520'
+        self.df.loc[self.df[0] == '0100', 8] = 'LOJA 59 PARTE B1'
         self.df.loc[self.df[0] == '0100', 9] = 'ASA SUL'
         self.df.loc[self.df[0] == '0100', 10] = '6181272930'
+        self.df.loc[self.df[0] == '0100', 11] = ''
         self.df.loc[self.df[0] == '0100', 12] = 'NEGOCIOS@TAXALL.COM.BR'
         self.df.loc[self.df[0] == '0100', 13] = '5300108'
 
