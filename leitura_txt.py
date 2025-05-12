@@ -127,18 +127,11 @@ if uploaded_files:
         processed_files[file_name] = processed_txt
 
     # Criar o arquivo .zip com os arquivos processados
-    zip_buffer = BytesIO()
-
-    with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-        for file_name, content in processed_files.items():
-            zip_file.writestr(file_name, content)
-
-    zip_buffer.seek(0)
-
-    # Botão de download do arquivo ZIP
-    st.download_button(
-        label="Baixar Arquivos Processados (.zip)",
-        data=zip_buffer,
-        file_name="arquivos_processados.zip",
-        mime="application/zip"
-    )
+    # Criar botão de download para cada arquivo processado individualmente
+    for file_name, content in processed_files.items():
+        st.download_button(
+            label=f"Baixar",
+            data=content.encode('ISO-8859-1'),
+            file_name=file_name.replace('.txt', '_retificado.txt'),
+            mime="text/plain"
+        )
