@@ -325,6 +325,10 @@ class AlteracoesRegistros():
 
     def atualizar_contador_9900(self):
 
+        registros_m = ['M400', 'M410', 'M800', 'M810']
+        self.df = self.df[~((self.df[0] == '9900') & (self.df[1].isin(registros_m)))]
+
+
         #self.df.reset_index(drop=True, inplace=True)
         # Contar os registros M400, M410, M800, M810
         m400 = self.df.loc[self.df[0].str.startswith('M400', na=False), 0].shape[0]
